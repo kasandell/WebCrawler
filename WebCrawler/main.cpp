@@ -5,11 +5,27 @@
 //  Created by Kyle Sandell on 12/2/15.
 //  Copyright © 2015 Kyle Sandell. All rights reserved.
 //
+#include <vector>
+#include "WebCrawler.hpp"
 
-#include <iostream>
+using namespace std;
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    return 0;
+int main(int argc, char *argv[])
+{
+    vector<string> kwds;
+    vector<string> sites;
+    for (int i =0; i<argc; i++) {
+        if( argv[i]== "-k")
+        {
+            
+        }
+        if(argv[i] == "-s")
+        {
+            
+        }
+        if(argv[i] == "-t")
+        {
+            
+        }
+    }
 }

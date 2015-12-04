@@ -29,10 +29,13 @@ void WebCrawler::crawl()
 {
     
     while (!URLs.empty()) {
-        string url=URLs.front();
-        URLs.pop();
-        string dat = readWebsite(url);
-        parse(pair<string, string>(url, dat));
+        if(!kill)
+        {
+            string url=URLs.front();
+            URLs.pop();
+            string dat = readWebsite(url);
+            parse(pair<string, string>(url, dat));
+        }
     }
     
 }
@@ -54,15 +57,13 @@ void WebCrawler::parse(pair<string, string> websiteAndURL)
     regex pat{ R"((http://)?www([./#\+-]\w*)+)" };
     istringstream iss(dat);
     set<string> sites=getStrings(iss, pat);
-    thread t(&WebCrawler::addURLsToQueue, sites);
-    thread k(&WebCrawler::findKeywords, pair<string, string>(site, dat));
+    if(!kill)
+    {
+        thread t(&WebCrawler::addURLsToQueue, sites);
+        thread k(&WebCrawler::findKeywords, pair<string, string>(site, dat));
+    }
 }
 
-
-void WebCrawler::addKeywords(vector<string> keywords)
-{
-    
-}
 
 string WebCrawler::readWebsite(string url)
 {
@@ -76,8 +77,11 @@ string WebCrawler::readWebsite(string url)
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WebCrawler::WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &websiteData);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
+        if(!kill)
+        {
+            res = curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+        }
     }
     return websiteData;
 }
@@ -93,13 +97,16 @@ void WebCrawler::addURLsToQueue(set<string> list)
     
     for(auto i:list)
     {
-        if(pastURLs.size()>4000000)
+        if(!kill)
         {
-            pastURLs.erase(pastURLs.begin());
-        }
-        if(find(pastURLs.begin(), pastURLs.end(), i) == pastURLs.end())
-        {
-            pastURLs.push_back(i);
+            if(pastURLs.size()>4000000)
+            {
+                pastURLs.erase(pastURLs.begin());
+            }
+            if(find(pastURLs.begin(), pastURLs.end(), i) == pastURLs.end())
+            {
+                pastURLs.push_back(i);
+            }
         }
     }
 }
@@ -113,9 +120,12 @@ double WebCrawler::findKeywords(pair<string, string> websiteAndData)
     string data=websiteAndData.second;
     for(auto word:keywords)
     {
-        if(data.find(word) != string::npos)
+        if(!kill)
         {
-            count++;
+            if(data.find(word) != string::npos)
+            {
+                count++;
+            }
         }
     }
     percentFound = (double(count)/double(numKwds))*100;
@@ -124,4 +134,9 @@ double WebCrawler::findKeywords(pair<string, string> websiteAndData)
         cout<<percentFound<<" of keywords found at: "<<site<<endl;
     }
     return percentFound;
+}
+
+void WebCrawler::setKill(bool val)
+{
+    kill=val;
 }

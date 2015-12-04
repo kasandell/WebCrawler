@@ -34,11 +34,13 @@ public:
     static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
     void addURLsToQueue(set<string> list);
     double findKeywords(pair<string, string> websiteAndURL);
+    void setKill(bool val);
 private:
     string websiteData;
     vector<string> keywords;
     queue<string> URLs;
     vector<string> pastURLs;
+    bool kill;
 };
 
 
