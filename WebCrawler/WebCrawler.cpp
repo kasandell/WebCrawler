@@ -54,10 +54,8 @@ void WebCrawler::parse(pair<string, string> websiteAndURL)
     regex pat{ R"((http://)?www([./#\+-]\w*)+)" };
     istringstream iss(dat);
     set<string> sites=getStrings(iss, pat);
-    for(auto u:sites)
-    {
-        URLs.push(u);
-    }
+    thread t(&WebCrawler::addURLsToQueue, sites);
+    thread k(&WebCrawler::findKeywords, pair<string, string>(site, dat));
 }
 
 
@@ -88,4 +86,42 @@ size_t WebCrawler::WriteCallback(void *contents, size_t size, size_t nmemb, void
 {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
+}
+
+void WebCrawler::addURLsToQueue(set<string> list)
+{
+    
+    for(auto i:list)
+    {
+        if(pastURLs.size()>4000000)
+        {
+            pastURLs.erase(pastURLs.begin());
+        }
+        if(find(pastURLs.begin(), pastURLs.end(), i) == pastURLs.end())
+        {
+            pastURLs.push_back(i);
+        }
+    }
+}
+
+double WebCrawler::findKeywords(pair<string, string> websiteAndData)
+{
+    double percentFound;
+    int count = 0;
+    int numKwds = keywords.size();
+    string site=websiteAndData.first;
+    string data=websiteAndData.second;
+    for(auto word:keywords)
+    {
+        if(data.find(word) != string::npos)
+        {
+            count++;
+        }
+    }
+    percentFound = (double(count)/double(numKwds))*100;
+    if(percentFound>50)
+    {
+        cout<<percentFound<<" of keywords found at: "<<site<<endl;
+    }
+    return percentFound;
 }

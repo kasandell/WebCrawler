@@ -32,11 +32,13 @@ public:
     set<string> getStrings(istream& is, regex pat);
     string readWebsite(string url);
     static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
-    
+    void addURLsToQueue(set<string> list);
+    double findKeywords(pair<string, string> websiteAndURL);
 private:
     string websiteData;
     vector<string> keywords;
     queue<string> URLs;
+    vector<string> pastURLs;
 };
 
 
