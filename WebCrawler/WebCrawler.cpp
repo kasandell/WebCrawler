@@ -12,6 +12,7 @@ WebCrawler::WebCrawler()
 {
     
 }
+
 WebCrawler::WebCrawler(vector<string>kwds, vector<string> websites)
 {
     for(auto kwd:kwds)
@@ -23,10 +24,19 @@ WebCrawler::WebCrawler(vector<string>kwds, vector<string> websites)
         URLs.push(site);
     }
 }
+
 void WebCrawler::crawl()
 {
-     regex pat{ R"((http://)?www([./#\+-]\w*)+)" };
+    
+    while (!URLs.empty()) {
+        string url=URLs.front();
+        URLs.pop();
+        string dat = readWebsite(url);
+        parse(pair<string, string>(url, dat));
+    }
+    
 }
+
 set<string> WebCrawler::getStrings(istream& is, regex pat)
 {
     set<string> res;
@@ -36,15 +46,46 @@ set<string> WebCrawler::getStrings(istream& is, regex pat)
             res.insert(m[0]);              // save match in set
     return res;
 }
-void WebCrawler::parse()
+
+void WebCrawler::parse(pair<string, string> websiteAndURL)
 {
-    
+    string site=websiteAndURL.first;
+    string dat=websiteAndURL.second;
+    regex pat{ R"((http://)?www([./#\+-]\w*)+)" };
+    istringstream iss(dat);
+    set<string> sites=getStrings(iss, pat);
+    for(auto u:sites)
+    {
+        URLs.push(u);
+    }
 }
-void WebCrawler::addURLsToQueue(vector<string> urlList)
-{
-    
-}
+
+
 void WebCrawler::addKeywords(vector<string> keywords)
 {
     
+}
+
+string WebCrawler::readWebsite(string url)
+{
+    websiteData.clear();
+    CURL *curl;
+    CURLcode res;
+    
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WebCrawler::WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &websiteData);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+    }
+    return websiteData;
+}
+
+size_t WebCrawler::WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
 }

@@ -19,6 +19,7 @@
 #include <curl/curl.h>
 #include <set>
 #include <regex>
+#include <sstream>
 using namespace std;
 
 class WebCrawler{
@@ -26,11 +27,14 @@ public:
     WebCrawler();
     WebCrawler(vector<string>kwds, vector<string> websites);
     void crawl();
-    void parse();
-    void addURLsToQueue(vector<string> urlList);
+    void parse(pair<string, string> websiteAndURL);
     void addKeywords(vector<string> keywords);
     set<string> getStrings(istream& is, regex pat);
+    string readWebsite(string url);
+    static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
+    
 private:
+    string websiteData;
     vector<string> keywords;
     queue<string> URLs;
 };
