@@ -33,6 +33,8 @@ int main(int argc, char *argv[])
             timespan = atoi(argv[i+1]);
         }
     }
+    kwds.push_back("C++");
+    sites.push_back("http://www.stackoverflow.com/");
     
     if(timespan != 0)
     {
@@ -49,6 +51,7 @@ int main(int argc, char *argv[])
     else{
         string q="";
         crawler=WebCrawler(kwds, sites);
+        crawler.crawl();
         cin>>q;
         while (q != "q") {
             cin>>q;
