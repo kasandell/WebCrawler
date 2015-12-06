@@ -35,6 +35,7 @@ public:
     void addURLsToQueue(set<string> list);
     double findKeywords(pair<string, string> websiteAndURL);
     void setKill(bool val);
+    void addToPastURLs(string URL);
 private:
     string websiteData;
     vector<string> keywords;
