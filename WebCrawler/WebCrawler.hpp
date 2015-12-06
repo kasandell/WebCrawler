@@ -36,12 +36,14 @@ public:
     double findKeywords(pair<string, string> websiteAndURL);
     void setKill(bool val);
     void addToPastURLs(string URL);
+    void setListSites(bool val);
 private:
     string websiteData;
     vector<string> keywords;
     queue<string> URLs;
     vector<string> pastURLs;
     bool kill;
+    bool listSites;
 };
 
 

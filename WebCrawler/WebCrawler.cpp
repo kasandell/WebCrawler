@@ -32,6 +32,10 @@ void WebCrawler::crawl()
         if(!kill)
         {
             string url=URLs.front();
+            if(listSites)
+            {
+                cout<<url<<endl;
+            }
             URLs.pop();
             if(find(pastURLs.begin(), pastURLs.end(), url) == pastURLs.end())
             {
@@ -157,4 +161,9 @@ void WebCrawler::addToPastURLs(string URL)
         }
         pastURLs.push_back(URL);
     }
+}
+
+void WebCrawler::setListSites(bool val)
+{
+    listSites=val;
 }
